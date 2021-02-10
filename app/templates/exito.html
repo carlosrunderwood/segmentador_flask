@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>success</title>
+
+</head>
+<body bgcolor="#aecaf2">
+<div align="center">
+    <p>Imagen : {{name}}</p>
+    <br>
+    <form action="/download"  method = "post">
+        <input type="submit" value="Descargar Zip">
+        <input type="hidden" name="name" value= {{name}}>
+    </form>
+    <form action="/">
+        <input type="submit" value="Regresar">
+    </form>
+    <img src="/static/imagenes/{{name}}/{{name}}_final.jpg" width="400" height="500"/>
+    
+</div>
+</body>
+</html>

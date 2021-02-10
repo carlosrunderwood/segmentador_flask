@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <title>upload</title>
+    <link href="http://fonts.googleapis.com/css?family=Didact+Gothic" rel="stylesheet" />
+    <link href="/static/css/default.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/static/css/fonts.css" rel="stylesheet" type="text/css" media="all" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+</head>
+<body bgcolor="#b8bdc4">
+    <div id="header-wrapper">
+        <div id="banner" class="container">
+            <div class="title">
+                <h2>Segmentador de copa óptica</h2>
+                <span class="byline">Método de umbralización</span>
+            </div>
+            <ul class="actions">
+                <li><form action = "/success" method = "post" enctype="multipart/form-data">
+                    <h3>Agrega una imagen de fondo de retina</h3>
+                    <input type="file" name="file" required /><br><br>
+                    <div class="checkbox">
+                        <br>
+                        <label style="padding-right:0px;">
+                            <input type="checkbox" name="calcular_dice" value="1">Agrega una máscara hecha por experto
+                        </label>
+                    </div>
+                    <div id="select">>
+                        <input type="file" name="file2"/><br><br>
+                     </div>
+                    <input type = "submit" value="Subir Imagen" class="button">
+                </form></li>
+            </ul>
+        </div>
+    </div>
+</body>
+    <script>
+        $('[name="calcular_dice"]').on('change', function() {
+            $('#select').toggle(this.checked);
+        }).change();
+    </script>
+</html>

@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>success</title>
+
+</head>
+<body bgcolor="#aecaf2">
+<div align="center">
+    <div>
+        <p>Imagen : {{name}}</p>
+        <p>Coeficiente Dice : {{dice}}</p>
+        <form action="/download"  method = "post">
+            <input type="submit" value="Descargar Zip">
+            <input type="hidden" name="name" value= {{name}}>
+        </form>
+        <form action="/">
+            <input type="submit" value="Regresar">
+        </form>
+        <div align="center">
+            <div class="figure" style="display:inline-block">
+                <p>Resultado</p>
+                <img src="/static/imagenes/{{name_file}}" width="400" height="500"/>
+            </div>
+            <div class="figure" style="display:inline-block">
+                <p>Máscara de experto</p>
+                <img src="/static/imagenes/{{nameMascara_file}}" width="400" height="500"/>
+            </div>
+        </div>
+    </div>
+    
+</div>
+</body>
+</html>
