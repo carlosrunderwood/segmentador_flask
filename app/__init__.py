@@ -1,5 +1,5 @@
 from flask import *
-from app.fuente.cdr import caracteristicas
+from app.fuente.cdr import caracteristicas,caracteristicasSD
 from app.fuente.comprimir import comprime
 import cv2
 

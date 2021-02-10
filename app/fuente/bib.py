@@ -35,6 +35,21 @@ def cierre(src, k):
     ero = cv2.erode(dil,kernel)
     return ero
 
+# Apertura binaria
+def apertura(src, k):
+    filterSize =(k, k) 
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, filterSize)
+    ero = cv2.erode(src,kernel)
+    dil = cv2.dilate(ero,kernel)
+    return dil
+
+def aperturaE(src, k):
+    filterSize =(k, k) 
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, filterSize)
+    ero = cv2.erode(src,kernel)
+    dil = cv2.dilate(ero,kernel)
+    return dil
+
 # Calculo de bordes
 def bordesCanny(src):
     canny = cv2.Canny(src, 50, 150)
@@ -58,9 +73,11 @@ def Convex_Hull(contours,shape,indice):
     hull = cv2.convexHull(contours[indice])
     hulls.append(hull)
     drawing = np.zeros(shape,dtype=np.uint8)
+    filledDrawing = np.zeros(shape,dtype=np.uint8)
     color = (255,255,255)
     cv2.drawContours(drawing, hulls, 0, color)
-    return drawing
+    cv2.drawContours(filledDrawing, hulls, 0, color,-1)
+    return drawing, filledDrawing
 
 #MinimumEllipseFit
 def minEllipse(contours,shape,indice):
@@ -72,8 +89,15 @@ def minEllipse(contours,shape,indice):
     cv2.ellipse(filledDrawing, ellipse, color,-1)
     return drawing, filledDrawing, ellipse
 
+def drawContours(contours,shape,indice):
+    drawing = np.zeros(shape,dtype=np.uint8)
+    color = (255,255,255)
+    cv2.drawContours(drawing, contours, 0, color,2)
+    return drawing
+
+
 # bounding box
-def boundingBox(src,contours,shape,indice):
+def boundingBox(contours,shape,indice):
     contours_poly = [None]*len(contours)
     boundRect = [None]*len(contours)
     c = contours[indice]
@@ -322,3 +346,65 @@ def connectedComp(src):
             res = mask[:]
             
     return res
+
+def candidateElection(src,veins):
+    res = []
+    maxi = 0
+    ret, labels = cv2.connectedComponents(src)
+    for label in range(1,ret):
+        mask = np.array(labels, dtype=np.uint8)
+        mask[labels == label] = 255
+        wpix = density(mask,veins)
+        if(wpix>maxi):
+            maxi = wpix
+            res = mask[:]
+    return res
+
+def density(src1,src2):
+    dens =  np.sum(src1[src2 == 255])/np.sum(src2)
+    return dens
+
+def crop(src, veins,org,rep,maskC,maskD,scale):
+    cont,ind = bordesCanny(src)
+    w,h = src.shape[:2]
+    _,dv,dh,center = boundingBox(cont, (w,h), ind)
+    x = center[0]
+    y = center[1]
+    width_start = max(int(math.floor(x - scale * dh/2)),0)
+    height_start = max(int( math.floor(y - scale * dv/2)),0)
+    width_end = min(w,int(math.floor(x + scale * dh/2)))
+    height_end = min(h,int(math.floor(y + scale * dv/2)))
+    
+    cropped_org = org[height_start:height_end,width_start:width_end,:]
+    cropped_rep = rep[height_start:height_end,width_start:width_end,:]
+    cropped_maskC = maskC[height_start:height_end,width_start:width_end]
+    cropped_maskD = maskD[height_start:height_end,width_start:width_end]
+    cropped_veins = veins[height_start:height_end,width_start:width_end]
+    
+    return cropped_org,cropped_veins, cropped_rep,cropped_maskC,cropped_maskD
+
+def crop2(src,org,maskC,scale):
+    cont,ind = bordesCanny(src)
+    w,h = src.shape[:2]
+    _,dv,dh,center = boundingBox(cont, (w,h), ind)
+    x = center[0]
+    y = center[1]
+    width_start = max(int(math.floor(x - scale * dh/2)),0)
+    height_start = max(int( math.floor(y - scale * dv/2)),0)
+    width_end = min(w,int(math.floor(x + scale * dh/2)))
+    height_end = min(h,int(math.floor(y + scale * dv/2)))
+    
+    cropped_org = org[height_start:height_end,width_start:width_end,:]
+    cropped_maskC = maskC[height_start:height_end,width_start:width_end]
+    
+    return cropped_org,cropped_maskC
+
+def applyMask(src,mask):
+    return cv2.bitwise_and(src, src, mask = mask)
+
+def contrast(src1,src2):
+   # print(src1.shape,src2.shape)
+    copa = np.mean(src1[src2 == [255,255,255]])
+    fondo = np.mean(src1[src2 == [0,0,0]])
+    #print(str(copa),str(fondo))
+    return copa,fondo

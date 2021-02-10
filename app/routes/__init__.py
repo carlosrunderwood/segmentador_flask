@@ -1,6 +1,6 @@
 from flask import *
 import cv2
-from app import caracteristicas,comprime, app
+from app import caracteristicas,comprime, app, caracteristicasSD
 
 
 @app.route("/")
@@ -21,12 +21,12 @@ def success():
             imgM = cv2.imread("app/static/imagenes/"+success.file_name_mascara)
             name = success.file_name.split(sep=".")
             nameM = success.file_name_mascara.split(sep=".")
-            caracteristicas(img,success.file_name)
+            dice = caracteristicas(img,success.file_name,imgM)
             comprime(name[0])
-            return render_template("dice.html",name = name[0],name_file=success.file_name,nameMascara_file = success.file_name_mascara, dice = 0.98)
+            return render_template("dice.html",name = name[0],name_file=success.file_name,nameMascara_file = success.file_name_mascara, dice = dice)
         else:
             return render_template("subirImagen.html")
-    caracteristicas(img,success.file_name)
+    caracteristicasSD(img,success.file_name)
     name = success.file_name.split(sep=".")
     comprime(name[0])
     return render_template("exito.html",name=name[0])
